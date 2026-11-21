@@ -1,0 +1,15 @@
+<nav class="ig-tabs-nav">
+  @for (tab of tabs(); track tab) {
+    <button
+      type="button"
+      (click)="tabChange.emit(tab)"
+      class="tab-btn"
+      [class.active]="activeTab() === tab"
+    >
+      <span class="tab-label">{{ tab }}</span>
+      @if (activeTab() === tab) {
+        <span class="tab-indicator"></span>
+      }
+    </button>
+  }
+</nav>

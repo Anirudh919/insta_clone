@@ -1,0 +1,136 @@
+.status-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1.5rem 0.25rem 1.5rem;
+  font-size: 0.75rem;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.dark-theme {
+  color: #ffffff;
+}
+
+.light-theme {
+  color: #000000;
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.time-text {
+  font-size: 0.75rem;
+}
+
+.notification-dot-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 9999px;
+  background-color: currentColor;
+  opacity: 0.8;
+  transform: scale(0.75);
+}
+
+.notification-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+}
+
+.dots-text {
+  font-size: 0.625rem;
+  opacity: 0.6;
+}
+
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.vo5g-badge {
+  font-size: 0.5625rem;
+  padding: 0.05rem 0.25rem;
+  background-color: rgba(0, 0, 0, 0.08);
+  border-radius: 0.25rem;
+  font-family: ui-monospace, monospace;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.vo5g-badge.dark-badge {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.signal-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.125rem;
+  height: 0.625rem;
+}
+
+.bar {
+  width: 0.125rem;
+  background-color: currentColor;
+  border-radius: 1px;
+}
+
+.bar-1 { height: 0.25rem; }
+.bar-2 { height: 0.375rem; }
+.bar-3 { height: 0.5rem; }
+.bar-4 { height: 0.625rem; }
+
+.battery-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.battery-body {
+  position: relative;
+  width: 1.5rem;
+  height: 0.75rem;
+  border-radius: 2px;
+  border: 1px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px;
+  overflow: hidden;
+}
+
+.battery-fill {
+  position: absolute;
+  left: 1px;
+  top: 1px;
+  bottom: 1px;
+  background-color: currentColor;
+  border-radius: 1px;
+}
+
+.battery-text {
+  position: relative;
+  z-index: 10;
+  font-size: 0.5rem;
+  font-weight: 800;
+  line-height: 1;
+  mix-blend-mode: difference;
+}
+
+.battery-terminal {
+  width: 0.125rem;
+  height: 0.375rem;
+  background-color: currentColor;
+  border-top-right-radius: 1px;
+  border-bottom-right-radius: 1px;
+}

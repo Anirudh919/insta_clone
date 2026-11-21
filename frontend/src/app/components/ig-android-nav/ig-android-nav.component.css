@@ -1,0 +1,47 @@
+.android-nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0.75rem 2rem;
+  user-select: none;
+  border-top: 1px solid rgba(243, 244, 246, 0.4);
+}
+
+.android-nav-btn {
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, opacity 0.15s ease;
+}
+
+.android-nav-btn:hover {
+  opacity: 1;
+}
+
+.android-nav-btn:active {
+  transform: scale(0.9);
+}
+
+.android-nav-btn:focus {
+  outline: none;
+}
+
+.square-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 2px;
+  border: 2px solid currentColor;
+}
+
+.circle-icon {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  border: 2px solid currentColor;
+}

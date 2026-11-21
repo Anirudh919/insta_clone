@@ -1,0 +1,331 @@
+<div class="post-page-layout">
+  <!-- Desktop / Mobile centered container -->
+  <div class="post-phone-container">
+    <!-- Status Bar (4:05, Vo5G, Battery 8%) -->
+    <ig-status-bar></ig-status-bar>
+
+    <!-- Instagram Posts Header (Image 5) -->
+    <ig-header
+      title="Posts"
+      [showCreateAction]="true"
+      (onCreateClick)="handleOpenCreatePost()"
+      (onBack)="handleBack()"
+    ></ig-header>
+
+    <!-- Add New Post Quick Action Banner -->
+    <div class="create-post-quickbar">
+      <div class="user-quick-profile">
+        <img src="/assets/avatar.jpg" class="quick-avatar" alt="Avatar" />
+        <button
+          type="button"
+          (click)="handleOpenCreatePost()"
+          class="create-input-placeholder"
+        >
+          Share a new reel or workout post...
+        </button>
+      </div>
+      <button
+        type="button"
+        (click)="handleOpenCreatePost()"
+        class="create-reel-pill-btn"
+        title="Add New Post / Reel"
+      >
+        <ig-icon name="plus" [size]="14" [strokeWidth]="2.5"></ig-icon>
+        <span>Add post</span>
+      </button>
+    </div>
+
+    <!-- Scrolling Feed of Multiple Posts & Reels -->
+    <main class="post-feed-area">
+      @for (reel of service.feedReels(); track reel.id) {
+        <article class="feed-item-card">
+          <reel-player
+            [stats]="reel"
+            [isMuted]="service.isMuted()"
+            [isPlaying]="service.isPlaying()"
+            (onMenuClick)="service.openActionSheet(reel.id)"
+            (onViewInsights)="navigateToInsights(reel.id)"
+            (onBoostClick)="handleBoost(reel.id)"
+            (onToggleMute)="service.toggleMute()"
+            (onTogglePlay)="service.togglePlay()"
+            (onLike)="service.toggleLike(reel.id)"
+            (onBookmark)="service.toggleBookmark(reel.id)"
+            (onCommentClick)="handleOpenComments(reel.id)"
+            (onRepostClick)="handleRepost(reel.id)"
+            (onShareClick)="handleShare(reel.id)"
+            (onWatchAgain)="handleWatchAgain(reel.id)"
+          ></reel-player>
+        </article>
+      }
+    </main>
+
+    <!-- Action Sheet Drawer (Image 4) -->
+    <ig-action-sheet
+      [isOpen]="service.isActionSheetOpen()"
+      [items]="service.actionMenuItems()"
+      (onClose)="service.closeActionSheet()"
+      (onAction)="handleAction($event)"
+    ></ig-action-sheet>
+
+    <!-- Interactive QR Code Modal -->
+    @if (service.isQrModalOpen()) {
+      <div class="qr-modal-backdrop" (click)="service.closeQrModal()">
+        <div class="qr-modal-card" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            (click)="service.closeQrModal()"
+            class="qr-close-btn"
+          >
+            <ig-icon name="close" [size]="20"></ig-icon>
+          </button>
+
+          <div class="qr-gradient-box">
+            <div class="qr-code-placeholder">
+              <ig-icon name="qr-code" [size]="140" [strokeWidth]="1.5"></ig-icon>
+            </div>
+            <div class="qr-username">&#64;{{ service.reelStats().username }}</div>
+            <div class="qr-meta">Scan to view this reel on Instagram</div>
+          </div>
+
+          <div class="qr-actions">
+            <button
+              type="button"
+              (click)="copyReelLink()"
+              class="qr-action-btn"
+            >
+              Copy Link
+            </button>
+            <button
+              type="button"
+              (click)="service.closeQrModal()"
+              class="qr-action-btn secondary"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Toast Feedback Notification -->
+    @if (toastMessage()) {
+      <div class="post-toast-badge">
+        {{ toastMessage() }}
+      </div>
+    }
+
+    <!-- Interactive Comments Bottom Sheet Drawer -->
+    @if (service.isCommentsSheetOpen()) {
+      <div class="comments-backdrop" (click)="service.closeCommentsSheet()">
+        <div class="comments-card" (click)="$event.stopPropagation()">
+          <div class="comments-grabber-bar">
+            <div class="grabber-pill"></div>
+          </div>
+
+          <div class="comments-header-row">
+            <h3 class="comments-title">
+              Comments ({{ service.comments().length }})
+            </h3>
+            <button
+              type="button"
+              (click)="service.closeCommentsSheet()"
+              class="comments-close-btn"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div class="comments-list-scroll">
+            @if (service.comments().length === 0) {
+              <div class="empty-comments-state">
+                <span class="empty-icon">💬</span>
+                <p class="empty-title">No comments yet</p>
+                <p class="empty-sub">Start the conversation below.</p>
+              </div>
+            } @else {
+              @for (comment of service.comments(); track $index) {
+                <div class="comment-item">
+                  <img [src]="comment.avatar" class="comment-avatar" alt="Avatar" />
+                  <div class="comment-body">
+                    <div class="comment-user-line">
+                      <span class="comment-username">{{ comment.username }}</span>
+                      <span class="comment-time">just now</span>
+                    </div>
+                    <p class="comment-text">{{ comment.text }}</p>
+                  </div>
+                  <button type="button" class="comment-like-btn" title="Like comment">
+                    <ig-icon name="heart" [size]="14"></ig-icon>
+                  </button>
+                </div>
+              }
+            }
+          </div>
+
+          <div class="comment-input-bar">
+            <img [src]="service.reelStats().userAvatar" class="input-avatar" alt="Your avatar" />
+            <input
+              type="text"
+              [ngModel]="newCommentInput()"
+              (ngModelChange)="newCommentInput.set($event)"
+              (keydown.enter)="handleSendComment()"
+              placeholder="Add a comment as duo_brothers_65..."
+              class="comment-text-input"
+            />
+            <button
+              type="button"
+              (click)="handleSendComment()"
+              [disabled]="!newCommentInput().trim()"
+              class="comment-post-btn"
+            >
+              Post
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Create New Post / Reel Modal -->
+    @if (service.isCreatePostOpen()) {
+      <div class="create-post-backdrop" (click)="service.closeCreatePostModal()">
+        <div class="create-post-card" (click)="$event.stopPropagation()">
+          <div class="create-post-header">
+            <h3 class="create-title">Create New Reel / Post</h3>
+            <button
+              type="button"
+              (click)="service.closeCreatePostModal()"
+              class="create-close-btn"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div class="create-post-scroll">
+            <!-- Cover preset selector -->
+            <div class="create-section">
+              <label class="create-label">Select Reel Footage / Cover</label>
+              <div class="preset-covers-row">
+                <div
+                  (click)="selectCoverPreset('/assets/gym_reel_video.jpg')"
+                  class="preset-thumb"
+                  [class.selected]="newPostForm().thumbnailUrl === '/assets/gym_reel_video.jpg'"
+                  title="Gym Grind"
+                >
+                  <img src="/assets/gym_reel_video.jpg" alt="Gym" />
+                  <span class="preset-tag">Gym</span>
+                </div>
+                <div
+                  (click)="selectCoverPreset('/assets/reel_thumb.jpg', '/assets/reel_video.jpg')"
+                  class="preset-thumb"
+                  [class.selected]="newPostForm().thumbnailUrl === '/assets/reel_thumb.jpg'"
+                  title="Snow Flight"
+                >
+                  <img src="/assets/reel_thumb.jpg" alt="Snow" />
+                  <span class="preset-tag">Snow</span>
+                </div>
+                <div
+                  (click)="selectCoverPreset('https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=400&auto=format&fit=crop')"
+                  class="preset-thumb"
+                  [class.selected]="newPostForm().thumbnailUrl.includes('photo-1527977966376-1c8408f9f108')"
+                  title="Tech Gadget"
+                >
+                  <img src="https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=400&auto=format&fit=crop" alt="Tech" />
+                  <span class="preset-tag">Tech</span>
+                </div>
+                <div
+                  (click)="selectCoverPreset('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&auto=format&fit=crop')"
+                  class="preset-thumb"
+                  [class.selected]="newPostForm().thumbnailUrl.includes('photo-1509198397868-475647b2a1e5')"
+                  title="Neon Tokyo"
+                >
+                  <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&auto=format&fit=crop" alt="Tokyo" />
+                  <span class="preset-tag">Tokyo</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Custom URL if desired -->
+            <div class="create-field">
+              <label>Custom Media Image / Video URL</label>
+              <input
+                type="text"
+                [ngModel]="newPostForm().thumbnailUrl"
+                (ngModelChange)="selectCoverPreset($event)"
+                placeholder="https://..."
+              />
+            </div>
+
+            <!-- Caption -->
+            <div class="create-field">
+              <label>Caption *</label>
+              <textarea
+                [ngModel]="newPostForm().caption"
+                (ngModelChange)="newPostForm().caption = $event"
+                placeholder="Write a caption... #gym #workout #duobrothers"
+                rows="3"
+              ></textarea>
+            </div>
+
+            <!-- Audio Title -->
+            <div class="create-field">
+              <label>Audio Track Title</label>
+              <input
+                type="text"
+                [ngModel]="newPostForm().audioTitle"
+                (ngModelChange)="newPostForm().audioTitle = $event"
+                placeholder="e.g. Vikram Sarkar · Naam Chale"
+              />
+            </div>
+
+            <!-- Creator Username -->
+            <div class="create-field">
+              <label>Creator Account</label>
+              <input
+                type="text"
+                [ngModel]="newPostForm().username"
+                (ngModelChange)="newPostForm().username = $event"
+                placeholder="duo_brothers_65"
+              />
+            </div>
+
+            <div class="create-inline-fields">
+              <div class="create-field">
+                <label>Initial Views</label>
+                <input
+                  type="number"
+                  [ngModel]="newPostForm().views"
+                  (ngModelChange)="newPostForm().views = +$event"
+                />
+              </div>
+              <div class="create-field">
+                <label>Initial Likes</label>
+                <input
+                  type="number"
+                  [ngModel]="newPostForm().likes"
+                  (ngModelChange)="newPostForm().likes = +$event"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="create-post-actions">
+            <button
+              type="button"
+              (click)="service.closeCreatePostModal()"
+              class="create-cancel-btn"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              (click)="handleCreatePostSubmit()"
+              [disabled]="!newPostForm().caption.trim()"
+              class="create-publish-btn"
+            >
+              Share Post to Atlas
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

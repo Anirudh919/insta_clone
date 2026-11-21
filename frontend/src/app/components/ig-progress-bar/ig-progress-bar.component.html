@@ -1,0 +1,20 @@
+<div class="progress-bar-wrapper">
+  <!-- Top Label row -->
+  <span class="progress-label">
+    {{ label() }}
+  </span>
+
+  <!-- Bar track + Percentage row side-by-side matching Screenshot -->
+  <div class="bar-value-row">
+    <div class="progress-track">
+      <div
+        class="progress-fill"
+        [style.width.%]="clampedPercentage()"
+        [ngClass]="colorClass()"
+      ></div>
+    </div>
+    <span class="progress-value">
+      {{ formattedPercentage() }}
+    </span>
+  </div>
+</div>

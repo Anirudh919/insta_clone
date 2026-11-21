@@ -1,0 +1,86 @@
+@if (isOpen()) {
+  <!-- Backdrop overlay -->
+  <div
+    (click)="onClose.emit()"
+    class="action-sheet-backdrop"
+  ></div>
+
+  <!-- Bottom Sheet Drawer -->
+  <div class="action-sheet-drawer">
+    <!-- Grabber handle -->
+    <div class="grabber-wrapper" (click)="onClose.emit()">
+      <div class="grabber-bar"></div>
+    </div>
+
+    <!-- Scrollable content area -->
+    <div class="sheet-content">
+      <!-- "About this reel" row matching Reference Image 1 -->
+      <button
+        type="button"
+        (click)="handleActionClick('about')"
+        class="about-reel-row"
+      >
+        <div class="about-reel-text">
+          <span class="about-title">About this reel</span>
+          <span class="about-subtitle">AI content</span>
+        </div>
+        <ig-icon
+          name="chevron-right"
+          [size]="20"
+          [strokeWidth]="2"
+          class="text-[#737373]"
+        ></ig-icon>
+      </button>
+
+      <!-- Divider line -->
+      <div class="sheet-divider"></div>
+
+      <!-- Audio track card matching Reference Image 1 -->
+      <button
+        type="button"
+        (click)="handleActionClick('audio')"
+        class="audio-info-row"
+      >
+        <img
+          src="/assets/audio_art.jpg"
+          alt="Naam Chale Audio"
+          class="audio-cover-img"
+        />
+        <div class="audio-text-group">
+          <span class="audio-name">Naam Chale • the_vikram_sarkar</span>
+          <span class="audio-type">Audio</span>
+        </div>
+      </button>
+
+      <!-- Divider line -->
+      <div class="sheet-divider"></div>
+
+      <!-- Complete 20-item Vertical Action List (Images 1 & 2) -->
+      <div class="action-list">
+        @for (item of items(); track item.id) {
+          <button
+            type="button"
+            (click)="handleItemClick(item)"
+            class="action-item-btn"
+            [class.primary-action]="item.isPrimary"
+            [class.destructive-action]="item.isDestructive"
+          >
+            <div class="action-icon-wrapper">
+              <ig-icon
+                [name]="item.icon"
+                [size]="22"
+                [strokeWidth]="1.85"
+                [filled]="item.id === 'save' && isSaved()"
+                [class.text-[#ed4956]]="item.isDestructive"
+                [class.text-[#0095f6]]="item.isPrimary"
+              ></ig-icon>
+            </div>
+            <span class="action-text">
+              {{ item.id === 'save' && isSaved() ? 'Saved' : item.label }}
+            </span>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}

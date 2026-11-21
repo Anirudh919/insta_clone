@@ -1,0 +1,698 @@
+<div class="insights-page-layout">
+  <div class="insights-phone-container">
+    <!-- Status Bar -->
+    <ig-status-bar></ig-status-bar>
+
+  <!-- Instagram Reel Insights Header (Images 1, 2, 3) -->
+  <ig-header
+    title="Reel insights"
+    [showInsightsActions]="true"
+    (onBack)="handleBack()"
+    (onTrendClick)="showInfoModal('Trends', 'Track performance velocity over the last 30 days.')"
+    (onMenuClick)="service.openActionSheet()"
+  ></ig-header>
+
+  <!-- Main Scrollable Content -->
+  <main class="insights-scroll-content">
+    <!-- Dynamic Reel Switcher & Quick Live Edit Bar -->
+    <div class="reel-control-banner">
+      <div class="reel-switcher-scroll">
+        @for (reel of service.feedReels(); track reel.id) {
+          <button
+            type="button"
+            (click)="handleSelectReel(reel.id)"
+            class="reel-chip-btn"
+            [class.active]="service.selectedReelId() === reel.id"
+            [title]="reel.username + ' · ' + reel.audioTitle"
+          >
+            <span class="chip-dot" [class.live]="service.selectedReelId() === reel.id"></span>
+            <span class="chip-name">{{ reel.username }}</span>
+          </button>
+        }
+      </div>
+
+      <button
+        type="button"
+        (click)="openMetricsEditor()"
+        class="edit-metrics-trigger"
+        title="Live Data Editor (MongoDB Atlas)"
+      >
+        <span class="edit-icon">✏️</span>
+        <span>Edit Metrics</span>
+      </button>
+    </div>
+
+    <!-- Reel Video Thumbnail Preview Box -->
+    <div class="thumb-preview-wrapper">
+      <div
+        (click)="navigateToPost()"
+        class="thumb-preview-box"
+        title="Click to view full reel post"
+      >
+        <img
+          [src]="service.reelStats().thumbnailUrl"
+          alt="Reel preview"
+          class="thumb-img"
+        />
+        <div class="thumb-hover-overlay"></div>
+      </div>
+    </div>
+
+    <!-- Quick Interaction Bar (Heart, Comment, Repost, Share, Bookmark) -->
+    <div class="stats-icon-bar">
+      <!-- Heart (Like) -->
+      <button
+        type="button"
+        (click)="service.toggleLike()"
+        class="stat-action-btn"
+        title="Like reel"
+      >
+        <ig-icon
+          name="heart"
+          [size]="22"
+          [strokeWidth]="1.9"
+          [filled]="service.reelStats().isLiked ?? false"
+          [class.text-[#ed4956]]="service.reelStats().isLiked ?? false"
+        ></ig-icon>
+        <span class="stat-count-text">
+          {{ service.reelStats().likes }}
+        </span>
+      </button>
+
+      <!-- Comment (original position) -->
+      <button
+        type="button"
+        (click)="handleCommentClick()"
+        class="stat-action-btn"
+        title="Open comments"
+      >
+        <ig-icon name="comment" [size]="22" [strokeWidth]="1.9"></ig-icon>
+        <span class="stat-count-text">
+          {{ service.reelStats().comments }}
+        </span>
+      </button>
+
+      <!-- Repost -->
+      <button
+        type="button"
+        (click)="handleRepost()"
+        class="stat-action-btn"
+        title="Repost reel"
+      >
+        <ig-icon name="repost" [size]="22" [strokeWidth]="1.9"></ig-icon>
+        <span class="stat-count-text">
+          {{ service.reelStats().reposts }}
+        </span>
+      </button>
+
+      <!-- Share / Direct message -->
+      <button
+        type="button"
+        (click)="handleShare()"
+        class="stat-action-btn"
+        title="Share reel"
+      >
+        <ig-icon name="share" [size]="22" [strokeWidth]="1.9"></ig-icon>
+        <span class="stat-count-text">
+          {{ service.reelStats().shares }}
+        </span>
+      </button>
+
+      <!-- Bookmark / Save -->
+      <button
+        type="button"
+        (click)="service.toggleBookmark()"
+        class="stat-action-btn"
+        title="Save reel"
+      >
+        <ig-icon
+          name="bookmark"
+          [size]="22"
+          [strokeWidth]="1.9"
+          [filled]="service.reelStats().isBookmarked ?? false"
+        ></ig-icon>
+        <span class="stat-count-text">
+          {{ service.reelStats().bookmarks }}
+        </span>
+      </button>
+    </div>
+
+    <!-- Navigation Tabs: Overview, Engagement, Audience -->
+    <ig-tabs
+      [tabs]="['Overview', 'Engagement', 'Audience']"
+      [activeTab]="service.activeTab()"
+      (tabChange)="service.setTab($event)"
+    ></ig-tabs>
+
+    <!-- TAB CONTENT: OVERVIEW (Image 3) -->
+    @if (service.activeTab() === 'Overview') {
+      <div class="tab-pane-content">
+        <!-- Summary section -->
+        <section class="section-group">
+          <div class="section-header-row">
+            <h2 class="section-title">Summary</h2>
+            <button
+              type="button"
+              (click)="showInfoModal('Summary', 'Summary of all views, reached accounts, average watch time, and new follows driven by this reel.')"
+              class="info-icon-btn"
+              aria-label="Summary info"
+            >
+              <ig-icon name="info" [size]="16" [strokeWidth]="1.9"></ig-icon>
+            </button>
+          </div>
+
+          <!-- 4 Stat Cards in 2x2 grid -->
+          <div class="summary-cards-grid">
+            <ig-metric-card
+              label="Views"
+              [value]="service.overviewMetrics().views"
+            ></ig-metric-card>
+
+            <ig-metric-card
+              label="Accounts reached"
+              [value]="service.overviewMetrics().accountsReached"
+            ></ig-metric-card>
+
+            <ig-metric-card
+              label="Average watch time"
+              [value]="service.overviewMetrics().averageWatchTime"
+            ></ig-metric-card>
+
+            <ig-metric-card
+              label="Follows"
+              [value]="service.overviewMetrics().follows"
+            ></ig-metric-card>
+          </div>
+        </section>
+
+        <!-- What affects your views section -->
+        <section class="section-group pt-2">
+          <div class="section-header-row">
+            <h2 class="section-title">What affects your views</h2>
+            <button
+              type="button"
+              (click)="showInfoModal('What affects your views', 'Rates such as skip rate reflect viewer retention and help Instagram recommend your reel.')"
+              class="info-icon-btn"
+              aria-label="Skip rate info"
+            >
+              <ig-icon name="info" [size]="16" [strokeWidth]="1.9"></ig-icon>
+            </button>
+          </div>
+
+          <p class="section-subtitle">
+            Rates are listed in order of importance to reach.
+          </p>
+
+          <!-- Skip rate metric row with circular clock icon -->
+          <div class="skip-rate-row">
+            <div class="skip-rate-left">
+              <div class="clock-icon-bubble">
+                <ig-icon name="clock" [size]="19" [strokeWidth]="1.8"></ig-icon>
+              </div>
+              <span class="skip-rate-label">
+                Skip rate
+              </span>
+            </div>
+
+            <span class="skip-rate-pct">
+              {{ service.overviewMetrics().skipRate }}%
+            </span>
+          </div>
+        </section>
+      </div>
+    }
+
+    <!-- TAB CONTENT: AUDIENCE (Images 1 & 2) -->
+    @if (service.activeTab() === 'Audience') {
+      <div class="tab-pane-content">
+        <!-- Who viewed your reel section -->
+        <section class="section-group">
+          <div class="section-header-row">
+            <h2 class="section-title">Who viewed your reel</h2>
+            <button
+              type="button"
+              (click)="showInfoModal('Who viewed your reel', 'Breakdown of viewers between your existing followers and people who do not follow you yet.')"
+              class="info-icon-btn"
+              aria-label="Viewer breakdown info"
+            >
+              <ig-icon name="info" [size]="16" [strokeWidth]="1.9"></ig-icon>
+            </button>
+          </div>
+
+          <div class="viewers-progress-group">
+            <!-- Followers bar (Magenta) -->
+            <ig-progress-bar
+              label="Followers"
+              [percentage]="service.audienceViewers().followers"
+              color="magenta"
+            ></ig-progress-bar>
+
+            <!-- Non-followers bar (Purple) -->
+            <ig-progress-bar
+              label="Non-followers"
+              [percentage]="service.audienceViewers().nonFollowers"
+              color="purple"
+            ></ig-progress-bar>
+          </div>
+        </section>
+
+        <!-- Audience details section -->
+        <section class="section-group pt-3 border-t border-gray-100">
+          <div class="section-header-row">
+            <h2 class="section-title">Audience details</h2>
+            <button
+              type="button"
+              (click)="showInfoModal('Audience details', 'Demographics of people reached by this reel including Age, Country, and Gender distributions.')"
+              class="info-icon-btn"
+              aria-label="Audience details info"
+            >
+              <ig-icon name="info" [size]="16" [strokeWidth]="1.9"></ig-icon>
+            </button>
+          </div>
+
+          <!-- Filter Pills (Age, Country, Gender) -->
+          <ig-pill-selector
+            [options]="audiencePillOptions"
+            [selectedId]="service.activeAudienceFilter()"
+            (onSelect)="handlePillSelect($event)"
+          ></ig-pill-selector>
+
+          <!-- Breakdown list based on selected pill -->
+          <div class="details-breakdown-group">
+            @switch (service.activeAudienceFilter()) {
+              @case ('Country') {
+                <!-- Country view (Image 1: India 80%, etc.) -->
+                @for (country of service.audienceDetails().countries; track country.label) {
+                  <ig-progress-bar
+                    [label]="country.label"
+                    [percentage]="country.percentage"
+                    color="magenta"
+                  ></ig-progress-bar>
+                }
+              }
+              @case ('Age') {
+                <!-- Age view (Image 2: 18-24 100%, others 0%) -->
+                @for (age of service.audienceDetails().ageRanges; track age.label) {
+                  <ig-progress-bar
+                    [label]="age.label"
+                    [percentage]="age.percentage"
+                    [color]="age.percentage > 0 ? 'magenta' : 'gray'"
+                  ></ig-progress-bar>
+                }
+              }
+              @case ('Gender') {
+                <!-- Gender view -->
+                @for (gender of service.audienceDetails().genders; track gender.label) {
+                  <ig-progress-bar
+                    [label]="gender.label"
+                    [percentage]="gender.percentage"
+                    [color]="gender.color || 'magenta'"
+                  ></ig-progress-bar>
+                }
+              }
+            }
+          </div>
+        </section>
+      </div>
+    }
+
+    <!-- TAB CONTENT: ENGAGEMENT -->
+    @if (service.activeTab() === 'Engagement') {
+      <div class="tab-pane-content">
+        <section class="section-group">
+          <div class="section-header-row">
+            <h2 class="section-title">Interactions</h2>
+            <button
+              type="button"
+              (click)="showInfoModal('Interactions', 'Actions taken by accounts that saw your reel.')"
+              class="info-icon-btn"
+            >
+              <ig-icon name="info" [size]="16" [strokeWidth]="1.9"></ig-icon>
+            </button>
+          </div>
+
+          <div class="summary-cards-grid">
+            <ig-metric-card label="Accounts engaged" [value]="2"></ig-metric-card>
+            <ig-metric-card label="Likes" [value]="service.reelStats().likes"></ig-metric-card>
+            <ig-metric-card label="Comments" [value]="service.reelStats().comments"></ig-metric-card>
+            <ig-metric-card label="Saves" [value]="service.reelStats().bookmarks"></ig-metric-card>
+          </div>
+        </section>
+      </div>
+    }
+  </main>
+
+  <!-- Action Sheet Drawer (Image 4) -->
+  <ig-action-sheet
+    [isOpen]="service.isActionSheetOpen()"
+    [items]="service.actionMenuItems()"
+    (onClose)="service.closeActionSheet()"
+    (onAction)="handleActionSheetItem($event)"
+  ></ig-action-sheet>
+
+  <!-- Live Data & Metrics Editor Modal (MongoDB Atlas) -->
+  @if (service.isMetricsEditorOpen()) {
+    <div class="metrics-modal-backdrop" (click)="service.closeMetricsEditor()">
+      <div class="metrics-modal-card" (click)="$event.stopPropagation()">
+        <div class="metrics-modal-header">
+          <div class="modal-header-text">
+            <h3 class="editor-title">Edit Live Data & Insights</h3>
+            <span class="editor-sub">Syncing dynamically with MongoDB Atlas</span>
+          </div>
+          <button
+            type="button"
+            (click)="service.closeMetricsEditor()"
+            class="modal-close-btn"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Editor Tabs: Metrics, Audience, Presets -->
+        <div class="editor-tabs-bar">
+          <button
+            type="button"
+            class="editor-tab-btn"
+            [class.active]="activeEditorTab() === 'metrics'"
+            (click)="activeEditorTab.set('metrics')"
+          >
+            Metrics
+          </button>
+          <button
+            type="button"
+            class="editor-tab-btn"
+            [class.active]="activeEditorTab() === 'audience'"
+            (click)="activeEditorTab.set('audience')"
+          >
+            Audience & Demographics
+          </button>
+          <button
+            type="button"
+            class="editor-tab-btn"
+            [class.active]="activeEditorTab() === 'presets'"
+            (click)="activeEditorTab.set('presets')"
+          >
+            Presets
+          </button>
+        </div>
+
+        <div class="editor-form-scroll">
+          @if (activeEditorTab() === 'metrics') {
+            <!-- Reel Stats Section -->
+            <div class="form-section">
+              <h4 class="form-section-title">Reel Interactions</h4>
+              <div class="input-grid">
+                <div class="input-field">
+                  <label>Likes</label>
+                  <input type="number" [ngModel]="editForm().likes" (ngModelChange)="editForm().likes = +$event" />
+                </div>
+                <div class="input-field">
+                  <label>Comments</label>
+                  <input type="number" [ngModel]="editForm().comments" (ngModelChange)="editForm().comments = +$event" />
+                </div>
+                <div class="input-field">
+                  <label>Reposts</label>
+                  <input type="number" [ngModel]="editForm().reposts" (ngModelChange)="editForm().reposts = +$event" />
+                </div>
+                <div class="input-field">
+                  <label>Shares</label>
+                  <input type="number" [ngModel]="editForm().shares" (ngModelChange)="editForm().shares = +$event" />
+                </div>
+                <div class="input-field">
+                  <label>Bookmarks / Saves</label>
+                  <input type="number" [ngModel]="editForm().bookmarks" (ngModelChange)="editForm().bookmarks = +$event" />
+                </div>
+                <div class="input-field">
+                  <label>Total Views</label>
+                  <input type="number" [ngModel]="editForm().views" (ngModelChange)="editForm().views = +$event" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Overview Section -->
+            <div class="form-section">
+              <h4 class="form-section-title">Overview Summary</h4>
+              <div class="input-grid">
+                <div class="input-field">
+                  <label>Accounts Reached</label>
+                  <input type="number" [ngModel]="editForm().accountsReached" (ngModelChange)="editForm().accountsReached = +$event" />
+                </div>
+                <div class="input-field">
+                  <label>Average Watch Time</label>
+                  <input type="text" [ngModel]="editForm().averageWatchTime" (ngModelChange)="editForm().averageWatchTime = $event" placeholder="e.g. 16s" />
+                </div>
+                <div class="input-field">
+                  <label>New Follows</label>
+                  <input type="number" [ngModel]="editForm().follows" (ngModelChange)="editForm().follows = +$event" />
+                </div>
+                <div class="input-field">
+                  <label>Skip Rate (%)</label>
+                  <input type="number" step="0.1" [ngModel]="editForm().skipRate" (ngModelChange)="editForm().skipRate = +$event" />
+                </div>
+              </div>
+            </div>
+          }
+
+          @if (activeEditorTab() === 'audience') {
+            <!-- Audience Viewers -->
+            <div class="form-section">
+              <h4 class="form-section-title">Who Viewed Your Reel</h4>
+              <div class="input-grid">
+                <div class="input-field">
+                  <label>Followers (%)</label>
+                  <input type="number" step="0.1" [ngModel]="editForm().followers" (ngModelChange)="editForm().followers = +$event" />
+                </div>
+                <div class="input-field">
+                  <label>Non-followers (%)</label>
+                  <input type="number" step="0.1" [ngModel]="editForm().nonFollowers" (ngModelChange)="editForm().nonFollowers = +$event" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Age Demographics -->
+            <div class="form-section">
+              <h4 class="form-section-title">Age Distribution (%)</h4>
+              <div class="input-grid">
+                <div class="input-field">
+                  <label>13-17 (%)</label>
+                  <input type="number" [ngModel]="editForm().age13_17" (ngModelChange)="editForm().age13_17 = +$event" />
+                </div>
+                <div class="input-field">
+                  <label>18-24 (%)</label>
+                  <input type="number" [ngModel]="editForm().age18_24" (ngModelChange)="editForm().age18_24 = +$event" />
+                </div>
+                <div class="input-field">
+                  <label>25-34 (%)</label>
+                  <input type="number" [ngModel]="editForm().age25_34" (ngModelChange)="editForm().age25_34 = +$event" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Country Demographics List with Add/Remove -->
+            <div class="form-section">
+              <div class="section-title-with-btn">
+                <h4 class="form-section-title">Country Distribution (%)</h4>
+                <button
+                  type="button"
+                  (click)="addCountryToForm()"
+                  class="small-add-btn"
+                >
+                  + Add Country
+                </button>
+              </div>
+
+              <div class="countries-form-list">
+                @for (c of editCountriesList(); track $index) {
+                  <div class="country-edit-row">
+                    <input
+                      type="text"
+                      [ngModel]="c.label"
+                      (ngModelChange)="c.label = $event"
+                      placeholder="Country name"
+                      class="country-name-input"
+                    />
+                    <div class="country-pct-wrap">
+                      <input
+                        type="number"
+                        [ngModel]="c.percentage"
+                        (ngModelChange)="c.percentage = +$event"
+                        placeholder="%"
+                        class="country-pct-input"
+                      />
+                      <span>%</span>
+                    </div>
+                    <button
+                      type="button"
+                      (click)="removeCountryFromForm($index)"
+                      class="remove-row-btn"
+                      title="Delete country"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Gender Demographics -->
+            <div class="form-section">
+              <h4 class="form-section-title">Gender Distribution (%)</h4>
+              <div class="input-grid">
+                <div class="input-field">
+                  <label>Men (%) [Magenta]</label>
+                  <input type="number" [ngModel]="editForm().genderMen" (ngModelChange)="editForm().genderMen = +$event" />
+                </div>
+                <div class="input-field">
+                  <label>Women (%) [Purple]</label>
+                  <input type="number" [ngModel]="editForm().genderWomen" (ngModelChange)="editForm().genderWomen = +$event" />
+                </div>
+              </div>
+            </div>
+          }
+
+          @if (activeEditorTab() === 'presets') {
+            <div class="form-section">
+              <h4 class="form-section-title">Quick Demo Presets</h4>
+              <div class="preset-buttons-col">
+                <button
+                  type="button"
+                  (click)="applyPreset('reference_images')"
+                  class="preset-card-btn"
+                >
+                  <span class="preset-name">Reference Screenshots (920 Likes Demo)</span>
+                  <span class="preset-desc">Likes: 920 · Comments: 63 · Reposts: 54 · Shares: 230 · Bookmarks: 310 · India: 80% · 18-24: 60% · Men: 70%</span>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="applyPreset('gym_reel')"
+                  class="preset-card-btn"
+                >
+                  <span class="preset-name">Duo Brothers Gym Grind (Reel 1)</span>
+                  <span class="preset-desc">Likes: 2 · Views: 185 · Followers: 50.8% · 18-24: 100% · India: 100%</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="metrics-modal-actions">
+          <button
+            type="button"
+            (click)="resetMetrics()"
+            class="modal-secondary-btn"
+          >
+            Reset Default
+          </button>
+          <button
+            type="button"
+            (click)="saveMetrics()"
+            class="modal-primary-btn"
+          >
+            Save & Update MongoDB
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Interactive Comments Bottom Sheet Drawer -->
+  @if (service.isCommentsSheetOpen()) {
+    <div class="comments-backdrop" (click)="service.closeCommentsSheet()">
+      <div class="comments-card" (click)="$event.stopPropagation()">
+        <!-- Grabber bar -->
+        <div class="comments-grabber-bar">
+          <div class="grabber-pill"></div>
+        </div>
+
+        <div class="comments-header-row">
+          <h3 class="comments-title">
+            Comments ({{ service.comments().length }})
+          </h3>
+          <button
+            type="button"
+            (click)="service.closeCommentsSheet()"
+            class="comments-close-btn"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Comments List -->
+        <div class="comments-list-scroll">
+          @if (service.comments().length === 0) {
+            <div class="empty-comments-state">
+              <span class="empty-icon">💬</span>
+              <p class="empty-title">No comments yet</p>
+              <p class="empty-sub">Start the conversation below.</p>
+            </div>
+          } @else {
+            @for (comment of service.comments(); track $index) {
+              <div class="comment-item">
+                <img [src]="comment.avatar" class="comment-avatar" alt="User avatar" />
+                <div class="comment-body">
+                  <div class="comment-user-line">
+                    <span class="comment-username">{{ comment.username }}</span>
+                    <span class="comment-time">just now</span>
+                  </div>
+                  <p class="comment-text">{{ comment.text }}</p>
+                </div>
+                <button type="button" class="comment-like-btn" title="Like comment">
+                  <ig-icon name="heart" [size]="14"></ig-icon>
+                </button>
+              </div>
+            }
+          }
+        </div>
+
+        <!-- Sticky Comment Input Bar -->
+        <div class="comment-input-bar">
+          <img [src]="service.reelStats().userAvatar" class="input-avatar" alt="Your avatar" />
+          <input
+            type="text"
+            [ngModel]="newCommentInput()"
+            (ngModelChange)="newCommentInput.set($event)"
+            (keydown.enter)="handleSendComment()"
+            placeholder="Add a comment as duo_brothers_65..."
+            class="comment-text-input"
+          />
+          <button
+            type="button"
+            (click)="handleSendComment()"
+            [disabled]="!newCommentInput().trim()"
+            class="comment-post-btn"
+          >
+            Post
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Info Modal Popup -->
+  @if (activeModal()) {
+    <div class="modal-backdrop">
+      <div class="modal-card">
+        <h3 class="modal-title">{{ activeModal()?.title }}</h3>
+        <p class="modal-desc">{{ activeModal()?.description }}</p>
+        <div class="modal-action-row">
+          <button
+            type="button"
+            (click)="activeModal.set(null)"
+            class="modal-gotit-btn"
+          >
+            Got it
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Toast Feedback -->
+  @if (toastMessage()) {
+    <div class="insights-toast-badge">
+      {{ toastMessage() }}
+    </div>
+  }
+  </div>
+</div>

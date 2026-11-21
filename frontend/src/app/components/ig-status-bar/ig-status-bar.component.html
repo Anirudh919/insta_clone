@@ -1,0 +1,40 @@
+<div
+  class="status-bar-container"
+  [class.dark-theme]="isDark()"
+  [class.light-theme]="!isDark()"
+>
+  <!-- Left side: Time and status icon -->
+  <div class="left-section">
+    <span class="time-text">{{ time() }}</span>
+    <!-- Small instagram/social notification indicator -->
+    <span class="notification-dot-wrapper">
+      <span class="notification-dot" [class.bg-black]="isDark()" [class.bg-white]="!isDark()"></span>
+    </span>
+    <span class="dots-text">···</span>
+  </div>
+
+  <!-- Right side: Network, 5G, Battery -->
+  <div class="right-section">
+    <!-- Vo5G badge -->
+    <span class="vo5g-badge" [class.dark-badge]="isDark()">
+      Vo 5G+
+    </span>
+
+    <!-- Network signal bars -->
+    <div class="signal-bars">
+      <span class="bar bar-1"></span>
+      <span class="bar bar-2"></span>
+      <span class="bar bar-3"></span>
+      <span class="bar bar-4"></span>
+    </div>
+
+    <!-- Battery with percentage inside -->
+    <div class="battery-wrapper">
+      <div class="battery-body">
+        <div class="battery-fill" [style.width.%]="battery()"></div>
+        <span class="battery-text">{{ battery() }}</span>
+      </div>
+      <span class="battery-terminal"></span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<div
+  class="android-nav-container"
+  [class.bg-black]="isDark()"
+  [class.text-white]="isDark()"
+  [class.bg-white]="!isDark()"
+  [class.text-neutral-700]="!isDark()"
+>
+  <!-- Square: Recent apps -->
+  <button
+    (click)="onRecent.emit()"
+    type="button"
+    class="android-nav-btn"
+    title="Recent Apps"
+  >
+    <div class="square-icon"></div>
+  </button>
+
+  <!-- Circle: Home -->
+  <button
+    (click)="onHome.emit()"
+    type="button"
+    class="android-nav-btn"
+    title="Home"
+  >
+    <div class="circle-icon"></div>
+  </button>
+
+  <!-- Triangle: Back -->
+  <button
+    (click)="onBack.emit()"
+    type="button"
+    class="android-nav-btn"
+    title="Back"
+  >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+      <polygon points="19,3 19,21 5,12"></polygon>
+    </svg>
+  </button>
+</div>

@@ -1,0 +1,311 @@
+<div class="showcase-root">
+  <!-- Top Control Bar -->
+  <header class="showcase-header">
+    <div class="showcase-header-inner">
+      <!-- Logo & Title -->
+      <div class="brand-group">
+        <div class="brand-icon-box">
+          <ig-icon name="reel" [size]="20"></ig-icon>
+        </div>
+        <div>
+          <h1 class="brand-title">
+            Instagram Clone UI
+            <span class="version-badge">
+              Angular 21 + Tailwind
+            </span>
+          </h1>
+          <p class="brand-subtitle">All 5 Screens with Reusable Components</p>
+        </div>
+      </div>
+
+      <!-- Screen Switcher Tabs -->
+      <div class="screen-tabs-bar">
+        <button
+          type="button"
+          (click)="setView('all')"
+          class="nav-tab-btn"
+          [class.active]="viewMode() === 'all'"
+        >
+          Gallery (All 5)
+        </button>
+
+        <button
+          type="button"
+          (click)="setView('screen5_post')"
+          class="nav-tab-btn"
+          [class.active]="viewMode() === 'screen5_post'"
+        >
+          1. Post Video
+        </button>
+
+        <button
+          type="button"
+          (click)="setView('screen4_menu')"
+          class="nav-tab-btn"
+          [class.active]="viewMode() === 'screen4_menu'"
+        >
+          2. Action Sheet
+        </button>
+
+        <button
+          type="button"
+          (click)="setView('screen3_overview')"
+          class="nav-tab-btn"
+          [class.active]="viewMode() === 'screen3_overview'"
+        >
+          3. Overview
+        </button>
+
+        <button
+          type="button"
+          (click)="setView('screen1_country')"
+          class="nav-tab-btn"
+          [class.active]="viewMode() === 'screen1_country'"
+        >
+          4. Audience (Country)
+        </button>
+
+        <button
+          type="button"
+          (click)="setView('screen2_age')"
+          class="nav-tab-btn"
+          [class.active]="viewMode() === 'screen2_age'"
+        >
+          5. Audience (Age)
+        </button>
+      </div>
+
+      <!-- Actions & Frame Toggle -->
+      <div class="header-tools-group">
+        <button
+          type="button"
+          (click)="toggleDeviceFrame()"
+          class="tool-btn"
+        >
+          <span>{{ showDeviceFrame() ? 'Disable Phone Frame' : 'Enable Phone Frame' }}</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="toggleCustomizer()"
+          class="tool-btn dark-tool"
+        >
+          <span>Interactive Data</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Collapsible Interactive Data Panel -->
+    @if (showCustomizer()) {
+      <div class="customizer-panel">
+        <div class="customizer-field">
+          <label class="customizer-label">Views</label>
+          <input
+            type="number"
+            [value]="service.overviewMetrics().views"
+            (input)="updateViews($event)"
+            class="customizer-input"
+          />
+        </div>
+        <div class="customizer-field">
+          <label class="customizer-label">Likes</label>
+          <input
+            type="number"
+            [value]="service.reelStats().likes"
+            (input)="updateLikes($event)"
+            class="customizer-input"
+          />
+        </div>
+        <div class="customizer-field">
+          <label class="customizer-label">Reached Accounts</label>
+          <input
+            type="number"
+            [value]="service.overviewMetrics().accountsReached"
+            (input)="updateAccountsReached($event)"
+            class="customizer-input"
+          />
+        </div>
+        <div class="customizer-field">
+          <label class="customizer-label">Avg Watch Time</label>
+          <input
+            type="text"
+            [value]="service.overviewMetrics().averageWatchTime"
+            (input)="updateWatchTime($event)"
+            class="customizer-input"
+          />
+        </div>
+        <div class="customizer-field">
+          <label class="customizer-label">Followers %</label>
+          <input
+            type="number"
+            [value]="service.audienceViewers().followers"
+            (input)="updateFollowersPct($event)"
+            class="customizer-input"
+          />
+        </div>
+        <div class="customizer-field">
+          <label class="customizer-label">Non-Followers %</label>
+          <input
+            type="number"
+            [value]="service.audienceViewers().nonFollowers"
+            (input)="updateNonFollowersPct($event)"
+            class="customizer-input"
+          />
+        </div>
+      </div>
+    }
+  </header>
+
+  <!-- Main Showcase Container -->
+  <main class="showcase-main-body">
+    <!-- MODE 1: ALL 5 SCREENS SIDE-BY-SIDE GALLERY -->
+    @if (viewMode() === 'all') {
+      <div class="gallery-wrapper">
+        <div class="gallery-hero">
+          <h2 class="gallery-hero-title">All 5 Screens Pixel-Perfect Recreated</h2>
+          <p class="gallery-hero-subtitle">
+            Created with modular reusable components in Angular 21 with Tailwind CSS. Click on any screen header to focus on it.
+          </p>
+        </div>
+
+        <div class="gallery-grid">
+          <!-- SCREEN 1: POST VIEW -->
+          <div class="gallery-screen-item">
+            <div class="screen-item-header">
+              <span class="badge-blue">Screen 5</span>
+              <span>Post View</span>
+            </div>
+            <div class="screen-card">
+              <app-post-page></app-post-page>
+            </div>
+          </div>
+
+          <!-- SCREEN 2: ACTION SHEET MENU -->
+          <div class="gallery-screen-item">
+            <div class="screen-item-header">
+              <span class="badge-indigo">Screen 4</span>
+              <span>Options Action Sheet</span>
+            </div>
+            <div class="screen-card screen-card-dark">
+              <app-post-page></app-post-page>
+              <!-- Visible action sheet for showcase -->
+              <div class="absolute inset-0 z-30 pointer-events-auto">
+                <ig-action-sheet
+                  [isOpen]="true"
+                  [items]="service.actionMenuItems()"
+                  (onClose)="handleToast('Action sheet closed')"
+                  (onAction)="handleToast('Action clicked: ' + $event)"
+                ></ig-action-sheet>
+              </div>
+            </div>
+          </div>
+
+          <!-- SCREEN 3: OVERVIEW TAB -->
+          <div class="gallery-screen-item">
+            <div class="screen-item-header">
+              <span class="badge-purple">Screen 3</span>
+              <span>Insights: Overview</span>
+            </div>
+            <div class="screen-card">
+              <app-insights-page></app-insights-page>
+            </div>
+          </div>
+
+          <!-- SCREEN 4: AUDIENCE TAB (COUNTRY) -->
+          <div class="gallery-screen-item">
+            <div class="screen-item-header">
+              <span class="badge-rose">Screen 1</span>
+              <span>Insights: Audience (Country)</span>
+            </div>
+            <div class="screen-card">
+              <app-insights-page></app-insights-page>
+            </div>
+          </div>
+
+          <!-- SCREEN 5: AUDIENCE TAB (AGE BREAKDOWN) -->
+          <div class="gallery-screen-item">
+            <div class="screen-item-header">
+              <span class="badge-amber">Screen 2</span>
+              <span>Insights: Audience (Age)</span>
+            </div>
+            <div class="screen-card">
+              <app-insights-page></app-insights-page>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- MODE 2: INDIVIDUAL SCREEN FOCUS VIEW (WITH OR WITHOUT PHONE FRAME) -->
+    @if (viewMode() !== 'all') {
+      <div class="single-focus-container">
+        @if (showDeviceFrame()) {
+          <device-frame>
+            @switch (viewMode()) {
+              @case ('screen5_post') {
+                <app-post-page></app-post-page>
+              }
+              @case ('screen4_menu') {
+                <div class="relative h-full">
+                  <app-post-page></app-post-page>
+                  <ig-action-sheet
+                    [isOpen]="true"
+                    [items]="service.actionMenuItems()"
+                    (onClose)="setView('screen5_post')"
+                    (onAction)="handleToast('Action: ' + $event)"
+                  ></ig-action-sheet>
+                </div>
+              }
+              @case ('screen3_overview') {
+                <app-insights-page></app-insights-page>
+              }
+              @case ('screen1_country') {
+                <app-insights-page></app-insights-page>
+              }
+              @case ('screen2_age') {
+                <app-insights-page></app-insights-page>
+              }
+            }
+          </device-frame>
+        } @else {
+          <!-- Clean Responsive Card View -->
+          <div class="clean-card-frame">
+            @switch (viewMode()) {
+              @case ('screen5_post') {
+                <app-post-page></app-post-page>
+              }
+              @case ('screen4_menu') {
+                <div class="relative h-full">
+                  <app-post-page></app-post-page>
+                  <ig-action-sheet
+                    [isOpen]="true"
+                    [items]="service.actionMenuItems()"
+                    (onClose)="setView('screen5_post')"
+                    (onAction)="handleToast('Action: ' + $event)"
+                  ></ig-action-sheet>
+                </div>
+              }
+              @case ('screen3_overview') {
+                <app-insights-page></app-insights-page>
+              }
+              @case ('screen1_country') {
+                <app-insights-page></app-insights-page>
+              }
+              @case ('screen2_age') {
+                <app-insights-page></app-insights-page>
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+  </main>
+
+  <!-- Toast Feedback -->
+  @if (globalToast()) {
+    <div class="global-toast-badge">
+      <span class="toast-dot"></span>
+      <span>{{ globalToast() }}</span>
+    </div>
+  }
+</div>

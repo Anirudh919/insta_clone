@@ -1,0 +1,195 @@
+<div class="reel-player-card">
+  <!-- Creator header bar matching Reference Image 3 -->
+  <div class="creator-header">
+    <div class="creator-info">
+      <!-- Avatar -->
+      <div class="avatar-ring">
+        <img
+          [src]="stats().userAvatar"
+          alt="Avatar"
+          class="avatar-img"
+        />
+      </div>
+
+      <!-- User info & audio -->
+      <div class="user-details">
+        <span class="username">
+          {{ stats().username }}
+        </span>
+        <div class="audio-ticker">
+          <ig-icon name="music" [size]="11"></ig-icon>
+          <span class="audio-title">{{ stats().audioTitle }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu button (two horizontal lines = ) to open action sheet -->
+    <button
+      type="button"
+      (click)="onMenuClick.emit()"
+      class="reel-menu-btn"
+      title="Reel Options"
+    >
+      <ig-icon name="menu-bars" [size]="22" [strokeWidth]="2.4"></ig-icon>
+    </button>
+  </div>
+
+  <!-- Main Video Container -->
+  <div
+    class="video-viewport"
+    (click)="handleTap()"
+  >
+    <!-- Background reel footage -->
+    <div
+      class="video-bg-layer"
+      [class.video-playing]="isPlayingLocal()"
+      [style.background-image]="'url(' + (stats().videoUrl || stats().thumbnailUrl) + ')'"
+    ></div>
+
+    <!-- Vignette gradient -->
+    <div class="video-vignette"></div>
+
+    <!-- Center Playback Controls: ONLY Show "Watch again" Button as requested -->
+    @if (isEnded() || !isPlayingLocal()) {
+      <div class="center-video-controls">
+        <button
+          type="button"
+          (click)="handleWatchAgain($event)"
+          class="watch-again-pill"
+          title="Watch again from start"
+        >
+          <span class="replay-icon">↺</span>
+          <span class="replay-label">Watch again</span>
+        </button>
+      </div>
+    }
+
+    <!-- Bottom video playback progress line (0% to 100%) -->
+    <div class="video-progress-line">
+      <div
+        class="progress-bar-inner"
+        [style.width.%]="playbackProgress()"
+      ></div>
+    </div>
+
+    <!-- Double-tap Heart burst animation -->
+    @if (showHeartBurst()) {
+      <div class="heart-burst-overlay">
+        <ig-icon
+          name="heart"
+          [size]="96"
+          [filled]="true"
+          class="heart-burst-icon"
+        ></ig-icon>
+      </div>
+    }
+
+    <!-- Bottom right Mute/Unmute button -->
+    <button
+      type="button"
+      (click)="handleMuteToggle($event)"
+      class="mute-toggle-btn"
+      title="Toggle audio"
+    >
+      <ig-icon [name]="isMuted() ? 'volume-x' : 'volume-2'" [size]="16"></ig-icon>
+    </button>
+  </div>
+
+  <!-- Bottom Insights & Boost row (immediately under video, matching Reference Image 3) -->
+  <div class="post-insights-boost-row">
+    <!-- View insights button with eye icon -->
+    <button
+      type="button"
+      (click)="onViewInsights.emit()"
+      class="view-insights-link"
+    >
+      <ig-icon name="eye" [size]="18" [strokeWidth]="2"></ig-icon>
+      <span class="insights-text">
+        <strong>{{ stats().views }}</strong> · View insights
+      </span>
+    </button>
+
+    <!-- Boost post solid blue button -->
+    <button
+      type="button"
+      (click)="onBoostClick.emit()"
+      class="boost-post-btn"
+    >
+      Boost post
+    </button>
+  </div>
+
+  <!-- Instagram Interaction Row: Heart, Comment, Repost, Share on left; Bookmark on right -->
+  <div class="feed-interactions-row">
+    <div class="interactions-left">
+      <!-- Heart / Like -->
+      <button
+        type="button"
+        (click)="onLike.emit()"
+        class="action-btn"
+        title="Like"
+      >
+        <ig-icon
+          name="heart"
+          [size]="26"
+          [filled]="stats().isLiked ?? false"
+          [class.text-[#ed4956]]="stats().isLiked ?? false"
+        ></ig-icon>
+      </button>
+
+      <!-- Comment (original position with correct official Instagram SVG) -->
+      <button
+        type="button"
+        (click)="onCommentClick.emit()"
+        class="action-btn"
+        title="Comment"
+      >
+        <ig-icon name="comment" [size]="25" [strokeWidth]="1.9"></ig-icon>
+      </button>
+
+      <!-- Repost (two circulation arrows) -->
+      <button
+        type="button"
+        (click)="onRepostClick.emit()"
+        class="action-btn"
+        title="Repost"
+      >
+        <ig-icon name="repost" [size]="24" [strokeWidth]="1.8"></ig-icon>
+      </button>
+
+      <!-- Share (paper airplane) -->
+      <button
+        type="button"
+        (click)="onShareClick.emit()"
+        class="action-btn"
+        title="Share"
+      >
+        <ig-icon name="share" [size]="25"></ig-icon>
+      </button>
+    </div>
+
+    <!-- Bookmark / Save on far right -->
+    <button
+      type="button"
+      (click)="onBookmark.emit()"
+      class="action-btn"
+      title="Save"
+    >
+      <ig-icon
+        name="bookmark"
+        [size]="25"
+        [filled]="stats().isBookmarked ?? false"
+      ></ig-icon>
+    </button>
+  </div>
+
+  <!-- Optional Caption & Likes block when scrolled -->
+  @if (stats().caption) {
+    <div class="feed-caption-box">
+      <div class="caption-line">
+        <span class="caption-username">{{ stats().username }}</span>
+        <span class="caption-body">{{ stats().caption }}</span>
+      </div>
+    </div>
+  }
+</div>

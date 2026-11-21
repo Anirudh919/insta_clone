@@ -1,0 +1,60 @@
+<header
+  class="ig-header"
+  [class.bg-white]="!transparent()"
+  [class.bg-transparent]="transparent()"
+  [class.text-black]="!isDark()"
+  [class.text-white]="isDark()"
+>
+  <!-- Back Button & Title -->
+  <div class="header-left">
+    <button
+      (click)="onBack.emit()"
+      type="button"
+      class="nav-btn"
+      aria-label="Back"
+    >
+      <ig-icon name="arrow-left" [size]="24" [strokeWidth]="2"></ig-icon>
+    </button>
+
+    <h1 class="header-title">
+      {{ title() }}
+    </h1>
+  </div>
+
+  <!-- Right Action Icons -->
+  <div class="header-actions">
+    @if (showCreateAction()) {
+      <button
+        (click)="onCreateClick.emit()"
+        type="button"
+        class="nav-btn create-btn"
+        aria-label="Create Post"
+        title="Create New Post / Reel"
+      >
+        <ig-icon name="plus-square" [size]="23" [strokeWidth]="1.9"></ig-icon>
+      </button>
+    }
+
+    @if (showInsightsActions()) {
+      <button
+        (click)="onTrendClick.emit()"
+        type="button"
+        class="nav-btn"
+        aria-label="Trends"
+        title="Overview Trends"
+      >
+        <ig-icon name="trending-up" [size]="23" [strokeWidth]="2"></ig-icon>
+      </button>
+
+      <button
+        (click)="onMenuClick.emit()"
+        type="button"
+        class="nav-btn"
+        aria-label="Options"
+        title="Reel Options"
+      >
+        <ig-icon name="more-vertical" [size]="21" [strokeWidth]="2"></ig-icon>
+      </button>
+    }
+  </div>
+</header>

@@ -1,0 +1,12 @@
+<div class="pill-selector-container">
+  @for (option of options(); track option.id) {
+    <button
+      type="button"
+      (click)="onSelect.emit(option.id)"
+      class="pill-btn"
+      [class.active]="selectedId() === option.id"
+    >
+      {{ option.label }}
+    </button>
+  }
+</div>
