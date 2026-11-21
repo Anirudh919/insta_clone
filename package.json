@@ -1,0 +1,19 @@
+{
+  "name": "insta-clone-root",
+  "version": "1.0.0",
+  "description": "Instagram Clone Root Configuration for Render & Vercel",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "build": "cd backend && npm install",
+    "postinstall": "cd backend && npm install"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "mongoose": "^9.12.1",
+    "morgan": "^1.12.1"
+  }
+}

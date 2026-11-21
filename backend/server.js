@@ -73,8 +73,8 @@ app.use(errorHandler);
 
 // Start server
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
-    console.log(`🚀 Instagram Clone Server running on http://localhost:${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Instagram Clone Server running on port ${PORT}`);
     console.log(`📡 Endpoints available:`);
     console.log(`   - GET  /api/health`);
     console.log(`   - GET  /api/reels/current`);
