@@ -13,7 +13,7 @@ export class InsightsService {
   readonly apiUrl = (typeof window !== 'undefined' && localStorage.getItem('API_URL'))
     ? localStorage.getItem('API_URL')!.replace(/\/$/, '') + '/api'
     : (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1')
-      ? 'https://insta-clone-api-render.onrender.com/api' // Replace with your live Render backend URL
+      ? 'https://insta-clone-avyu.onrender.com' // Replace with your live Render backend URL
       : 'http://localhost:5000/api';
 
   // Feed of multiple reels for continuous scrolling
